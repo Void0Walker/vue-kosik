@@ -1,14 +1,11 @@
-import type { InjectionKey } from "vue";
 import type { TrendingGifs } from "../types/tenorTrends";
-import { createStore, useStore as baseUseStore, Store } from "vuex";
+import { createStore } from "vuex";
 
 export interface State {
   trendingGifs: Pick<TrendingGifs, "results"> | undefined;
   gifSearch: string | undefined;
   gifSearchResults: Pick<TrendingGifs, "results"> | undefined;
 }
-
-export const key: InjectionKey<Store<State>> = Symbol();
 
 export const store = createStore<State>({
   state: {
@@ -17,8 +14,15 @@ export const store = createStore<State>({
     gifSearchResults: undefined,
   },
   getters: {
-    getTrendingGifs: ({ trendingGifs }) => trendingGifs,
-    getGifSearch: ({ gifSearchResults }) => gifSearchResults,
+    getGifSearch: (state) => {
+      const slicedResult = state.gifSearchResults?.results
+        ? [...state.gifSearchResults.results].slice(0, 10)
+        : [];
+
+      console.log({ slicedResult });
+
+      return slicedResult;
+    },
   },
   actions: {
     async fetchGifs({ commit }) {
@@ -41,8 +45,6 @@ export const store = createStore<State>({
 
         const searchGifs = (await data.json()) as TrendingGifs;
 
-        console.log({ searchGifs });
-
         commit("SET_GIF_SEARCH_RESULTS", searchGifs);
       } catch (error) {
         alert(error);
@@ -61,5 +63,5 @@ export const store = createStore<State>({
 });
 
 export function useStore() {
-  return baseUseStore(key);
+  return store;
 }

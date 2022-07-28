@@ -1,12 +1,12 @@
 <script lang="ts">
 import type { Result } from "types/tenorTrends";
-import { defineComponent } from "vue";
+import { defineComponent, computed } from "vue";
 
 export default defineComponent({
-  props: { trendingGifs: Array<Result> },
+  props: { gifList: Array<Result> },
   setup(props) {
     return {
-      trendingGifsList: props.trendingGifs,
+      gifs: computed(() => props.gifList),
     };
   },
 });
@@ -14,19 +14,36 @@ export default defineComponent({
 
 <template>
   <div class="gif-container">
-    <h1 v-if="trendingGifsList">Vue is awesome!</h1>
-    <h1 v-else>Oh no 😢</h1>
-    <div v-for="(trendingGif, index) in trendingGifsList" :key="trendingGif.id">
-      <img :src="trendingGif.media[0].tinygif.url" />
-      <div class="details">
+    <div v-for="(gif, index) in gifs" :key="gif.id" class="gif-image-card">
+      <img :src="gif.media[0].tinygif.url" />
+      <div>
         <p>
-          Position: {{ index + 1 }},
-          <strong>{{ trendingGif.content_rating }}</strong
-          >{{ trendingGif.content_description }}
+          Position: {{ index + 1 }}, <strong>{{ gif.content_rating }}</strong
+          >{{ gif.content_description }}
         </p>
       </div>
     </div>
   </div>
 </template>
 
-<style scoped></style>
+<style scoped>
+.gif-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.gif-image-card {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
+  width: 100%;
+  margin: 1rem;
+}
+
+.gif-image-card > div {
+  text-align: center;
+  margin-left: 1rem;
+}
+</style>

@@ -1,14 +1,19 @@
 <script lang="ts">
 import { defineComponent, ref, computed } from "vue";
 import { debounce } from "lodash";
+
+import GifList from "../components/GifList.vue";
 import { useStore } from "../../store/store";
 
 export default defineComponent({
+  components: {
+    GifList,
+  },
   setup() {
     const store = useStore();
     const searchInput = ref("");
 
-    const handleInputChange = debounce((event: Event) => {
+    const handleSearchInput = debounce((event: Event) => {
       const searchTerm = (event.target as HTMLInputElement).value;
 
       store.dispatch("searchGifs", searchTerm);
@@ -16,34 +21,50 @@ export default defineComponent({
 
     return {
       searchInput,
-      handleInputChange,
-      gifs: computed(() => store.state.gifSearchResults?.results),
+      handleSearchInput,
+      gifs: computed(() =>
+        searchInput.value !== "" ? store.getters.getGifSearch : undefined
+      ),
     };
   },
 });
 </script>
 
 <template>
-  <div class="about">
+  <div class="search-container">
     <h1>Search page</h1>
-    <p>Message is: {{ searchInput }}</p>
+    <p>Search term is: {{ searchInput }}</p>
     <input
+      class="search-box"
       v-model="searchInput"
-      placeholder="edit me"
-      @keydown="handleInputChange"
+      placeholder="search"
+      @keydown="handleSearchInput"
     />
-    {{ gifs }}
+    <GifList :gif-list="gifs" />
   </div>
 </template>
 
-<style>
+<style scoped>
 @media (min-width: 1024px) {
-  .about {
+  .search-container {
     min-height: 100vh;
     display: flex;
     align-items: center;
     flex-direction: column;
-    justify-content: center;
+    justify-content: flex-start;
+  }
+
+  .search-container > h1,
+  p {
+    align-self: flex-start;
+  }
+
+  .search-box {
+    border-radius: 4px;
+    padding: 1rem;
+    font-size: 1rem;
+    min-width: 100%;
+    margin-bottom: 1rem;
   }
 }
 </style>

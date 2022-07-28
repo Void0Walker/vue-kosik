@@ -21,20 +21,15 @@ export default defineComponent({
 <template>
   <div>
     <h1>Trends</h1>
-    <GifList :trending-gifs="trendingGifs" />
+    <GifList :gif-list="trendingGifs" />
   </div>
 </template>
 
 <style>
 @media (min-width: 1024px) {
-  .gif-container {
+  .gif-image {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
-  }
-  .image {
-    height: 100%;
-    width: 100%;
-    object-fit: contain;
   }
 }
 </style>
